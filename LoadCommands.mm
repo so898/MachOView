@@ -78,6 +78,9 @@ using namespace std;
     case LC_VERSION_MIN_WATCHOS: return @"LC_VERSION_MIN_WATCHOS";
     case LC_NOTE: return @"LC_NOTE";
     case LC_BUILD_VERSION: return @"LC_BUILD_VERSION";
+    case LC_DYLD_EXPORTS_TRIE: return @"LC_DYLD_EXPORTS_TRIE";
+    case LC_DYLD_CHAINED_FIXUPS: return @"LC_DYLD_CHAINED_FIXUPS";
+    case LC_FILESET_ENTRY: return @"LC_FILESET_ENTRY";
   }
 }
 
@@ -2185,6 +2188,45 @@ using namespace std;
 }
 
 //-----------------------------------------------------------------------------
+- (MVNode *)createFilesetNode:(MVNode *)parent
+                      caption:(NSString *)caption
+                     location:(uint32_t)location
+        fileset_entry_command:(struct fileset_entry_command const *)fileset_entry_command
+{
+    MVNodeSaver nodeSaver;
+    MVNode * node = [parent insertChildWithDetails:caption location:location length:fileset_entry_command->cmdsize saver:nodeSaver];
+    
+    NSRange range = NSMakeRange(location,0);
+    NSString * lastReadHex;
+    
+    [dataController read_uint64:range lastReadHex:&lastReadHex];
+    [node.details appendRow:[NSString stringWithFormat:@"%.8lX", range.location]
+                           :lastReadHex
+                           :@"VM Address"
+                           :[NSString stringWithFormat:@"0x%llX", fileset_entry_command->vmaddr]];
+    
+    [dataController read_uint64:range lastReadHex:&lastReadHex];
+    [node.details appendRow:[NSString stringWithFormat:@"%.8lX", range.location]
+                           :lastReadHex
+                           :@"File Offset"
+                           :[NSString stringWithFormat:@"%llu", fileset_entry_command->fileoff]];
+    
+    [dataController read_uint32:range lastReadHex:&lastReadHex];
+    [node.details appendRow:[NSString stringWithFormat:@"%.8lX", range.location]
+                           :lastReadHex
+                           :@"Reserved"
+                           :[NSString stringWithFormat:@"%u", fileset_entry_command->reserved]];
+    
+    range = NSMakeRange(location + fileset_entry_command->entry_id.offset,0);
+    NSString * name = [dataController read_string:range lastReadHex:&lastReadHex];
+    [node.details appendRow:[NSString stringWithFormat:@"%.8lX", range.location]
+                           :lastReadHex
+                           :@"Entry ID"
+                           :name];
+    return node;
+}
+
+//-----------------------------------------------------------------------------
 -(MVNode *)createLoadCommandNode:(MVNode *)parent
                          caption:(NSString *)caption
                         location:(uint32_t)location
@@ -2378,6 +2420,8 @@ using namespace std;
     case LC_DATA_IN_CODE:
     case LC_DYLIB_CODE_SIGN_DRS:
     case LC_LINKER_OPTIMIZATION_HINT:
+    case LC_DYLD_EXPORTS_TRIE:
+    case LC_DYLD_CHAINED_FIXUPS:
     {
       MATCH_STRUCT(linkedit_data_command,location)
       node = [self createLCLinkeditDataNode:parent 
@@ -2513,7 +2557,11 @@ using namespace std;
                                    location:location
                       linker_option_command:linker_option_command];
     } break;
-      case LC_BUILD_VERSION:
+      case LC_NOTE:
+      {
+          
+      } break;
+    case LC_BUILD_VERSION:
       {
           MATCH_STRUCT(build_version_command, location);
           node = [self createLCBuildVersionNode:parent
@@ -2531,6 +2579,14 @@ using namespace std;
                                location:toolloc
                      build_tool_version:build_tool_version];
           }
+      } break;
+      case LC_FILESET_ENTRY:
+      {
+          MATCH_STRUCT(fileset_entry_command, location);
+          node = [self createFilesetNode:parent
+                                 caption:caption
+                                location:location
+                   fileset_entry_command:fileset_entry_command];
       } break;
     default:
       [self createDataNode:parent 
