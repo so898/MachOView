@@ -2084,6 +2084,55 @@ using namespace std;
 }
 
 //-----------------------------------------------------------------------------
+- (MVNode *)createLCNoteNode:(MVNode *)parent
+                     caption:(NSString *)caption
+                    location:(uint32_t)location
+                note_command:(struct note_command const *)note_command
+{
+    MVNodeSaver nodeSaver;
+    MVNode * node = [parent insertChildWithDetails:caption location:location length:note_command->cmdsize saver:nodeSaver];
+    
+    NSRange range = NSMakeRange(location,0);
+    NSString * lastReadHex;
+    
+    [dataController read_uint32:range lastReadHex:&lastReadHex];
+    [node.details appendRow:[NSString stringWithFormat:@"%.8lX", range.location]
+                           :lastReadHex
+                           :@"Command"
+                           :[self getNameForCommand:note_command->cmd]];
+    
+    [node.details setAttributes:MVCellColorAttributeName,[NSColor greenColor],nil];
+    
+    [dataController read_uint32:range lastReadHex:&lastReadHex];
+    [node.details appendRow:[NSString stringWithFormat:@"%.8lX", range.location]
+                           :lastReadHex
+                           :@"Command Size"
+                           :[NSString stringWithFormat:@"%u", note_command->cmdsize]];
+    
+    [node.details setAttributes:MVCellColorAttributeName,[NSColor greenColor],
+     MVUnderlineAttributeName,@"YES",nil];
+    
+    [dataController read_string:range fixlen:16 lastReadHex:&lastReadHex];
+    [node.details appendRow:[NSString stringWithFormat:@"%.8lX", range.location]
+                           :lastReadHex
+                           :@"Owner"
+                           :[NSString stringWithFormat:@"%s", string(note_command->data_owner,16).c_str()]];
+    
+    [dataController read_uint32:range lastReadHex:&lastReadHex];
+    [node.details appendRow:[NSString stringWithFormat:@"%.8lX", range.location]
+                           :lastReadHex
+                           :@"Offset"
+                           :[NSString stringWithFormat:@"%llu", note_command->offset]];
+    
+    [dataController read_uint32:range lastReadHex:&lastReadHex];
+    [node.details appendRow:[NSString stringWithFormat:@"%.8lX", range.location]
+                           :lastReadHex
+                           :@"Size"
+                           :[NSString stringWithFormat:@"%llu", note_command->size]];
+    return node;
+}
+
+//-----------------------------------------------------------------------------
 - (MVNode *)createLCBuildVersionNode:(MVNode *)parent
                               caption:(NSString *)caption
                              location:(uint32_t)location
@@ -2198,6 +2247,23 @@ using namespace std;
     
     NSRange range = NSMakeRange(location,0);
     NSString * lastReadHex;
+    
+    [dataController read_uint32:range lastReadHex:&lastReadHex];
+    [node.details appendRow:[NSString stringWithFormat:@"%.8lX", range.location]
+                           :lastReadHex
+                           :@"Command"
+                           :[self getNameForCommand:fileset_entry_command->cmd]];
+    
+    [node.details setAttributes:MVCellColorAttributeName,[NSColor greenColor],nil];
+    
+    [dataController read_uint32:range lastReadHex:&lastReadHex];
+    [node.details appendRow:[NSString stringWithFormat:@"%.8lX", range.location]
+                           :lastReadHex
+                           :@"Command Size"
+                           :[NSString stringWithFormat:@"%u", fileset_entry_command->cmdsize]];
+    
+    [node.details setAttributes:MVCellColorAttributeName,[NSColor greenColor],
+     MVUnderlineAttributeName,@"YES",nil];
     
     [dataController read_uint64:range lastReadHex:&lastReadHex];
     [node.details appendRow:[NSString stringWithFormat:@"%.8lX", range.location]
@@ -2559,7 +2625,11 @@ using namespace std;
     } break;
       case LC_NOTE:
       {
-          
+          MATCH_STRUCT(note_command, location);
+          node = [self createLCNoteNode:parent
+                                caption:caption
+                               location:location
+                           note_command:note_command];
       } break;
     case LC_BUILD_VERSION:
       {
@@ -2575,7 +2645,7 @@ using namespace std;
               uint32_t toolloc = location + sizeof(struct build_version_command) + ntool * sizeof(struct build_tool_version);
               MATCH_STRUCT(build_tool_version, toolloc)
               [self createBuildToolNode:node
-                                caption:[NSString stringWithFormat:@"Tools (%u)", ntool]
+                                caption:[NSString stringWithFormat:@"Tool (%u)", ntool]
                                location:toolloc
                      build_tool_version:build_tool_version];
           }
