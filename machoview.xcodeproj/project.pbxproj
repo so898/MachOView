@@ -142,6 +142,7 @@
 		3CF978C511C7B34C004CD74C /* DataSources.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DataSources.mm; sourceTree = "<group>"; };
 		3CF97F0D11C91F93004CD74C /* MachOLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = MachOLayout.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		3CF97F0E11C91F93004CD74C /* MachOLayout.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = MachOLayout.mm; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		797425D42920E95E00F31EF0 /* reloc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = reloc.h; sourceTree = "<group>"; };
 		7B111E4617DC33F8008ED484 /* Attach.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Attach.mm; sourceTree = "<group>"; };
 		7B111E4817DC3401008ED484 /* Attach.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Attach.h; sourceTree = "<group>"; };
 		7B5E71E319B6829F00843CCE /* libcapstone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcapstone.a; path = capstone/libcapstone.a; sourceTree = "<group>"; };
@@ -267,7 +268,7 @@
 				7B111E4817DC3401008ED484 /* Attach.h */,
 				7B111E4617DC33F8008ED484 /* Attach.mm */,
 			);
-			name = machoview;
+			path = machoview;
 			sourceTree = "<group>";
 		};
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
@@ -305,6 +306,7 @@
 				080E96DDFE201D6D7F000001 /* machoview */,
 				3C78CB26139EE44B006C9591 /* mach-o */,
 				29B97315FDCFA39411CA2CEA /* main */,
+				3CCB9FDF11F6DC2000F57CAA /* Info.plist */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
@@ -318,14 +320,13 @@
 				256AC3F00F4B6AF500CF3369 /* Prefix.pch */,
 				29B97316FDCFA39411CA2CEA /* main.mm */,
 			);
-			name = main;
+			path = main;
 			sourceTree = "<group>";
 		};
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 				3C46C8491687DEE600212190 /* Credits.rtf */,
-				3CCB9FDF11F6DC2000F57CAA /* Info.plist */,
 				3C0F958811F658BF0070A2FE /* redApple.icns */,
 				3C0F958711F658BF0070A2FE /* greenApple.icns */,
 				3C1163F013D5B88D007B4A6E /* stop.png */,
@@ -334,7 +335,7 @@
 				3C0F958011F6589D0070A2FE /* Layout.xib */,
 				3C3EC88D13B66E8900ECCDB2 /* Preferences.xib */,
 			);
-			name = Resources;
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
@@ -351,6 +352,7 @@
 		3C78CB26139EE44B006C9591 /* mach-o */ = {
 			isa = PBXGroup;
 			children = (
+				797425D32920E95E00F31EF0 /* arm64 */,
 				3CDFB35D139F603C00F46F18 /* arch.h */,
 				3CDFB35E139F603C00F46F18 /* arm */,
 				3CDFB360139F603C00F46F18 /* compact_unwind_encoding.h */,
@@ -379,6 +381,14 @@
 				3CDFB368139F603C00F46F18 /* reloc.h */,
 			);
 			path = x86_64;
+			sourceTree = "<group>";
+		};
+		797425D32920E95E00F31EF0 /* arm64 */ = {
+			isa = PBXGroup;
+			children = (
+				797425D42920E95E00F31EF0 /* reloc.h */,
+			);
+			path = arm64;
 			sourceTree = "<group>";
 		};
 		7B5E71DF19B6829F00843CCE /* capstone */ = {
@@ -689,7 +699,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -700,7 +710,7 @@
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = Prefix.pch;
+				GCC_PREFIX_HEADER = main/Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GENERATE_PROFILING_CODE = NO;
@@ -742,7 +752,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -753,7 +763,7 @@
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = Prefix.pch;
+				GCC_PREFIX_HEADER = main/Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = NS_BLOCK_ASSERTIONS;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
@@ -798,7 +808,7 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_OBJCPP_ARC_ABI = YES;
 				CODE_SIGN_IDENTITY = "";
@@ -816,14 +826,14 @@
 				PRODUCT_NAME = MachOView;
 				SDKROOT = macosx;
 				STRIP_INSTALLED_PRODUCT = NO;
-				VALID_ARCHS = x86_64;
+				VALID_ARCHS = "x86_64 arm64";
 			};
 			name = Debug;
 		};
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_OBJCPP_ARC_ABI = YES;
 				CODE_SIGN_IDENTITY = "";
@@ -839,7 +849,7 @@
 				PRODUCT_NAME = MachOView;
 				SDKROOT = macosx;
 				STRIP_INSTALLED_PRODUCT = NO;
-				VALID_ARCHS = x86_64;
+				VALID_ARCHS = "x86_64 arm64";
 			};
 			name = Release;
 		};
