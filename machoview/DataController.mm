@@ -168,7 +168,7 @@ NSString * const MVStatusTaskTerminated           = @"MVStatusTaskTerminated";
     if(str){
         const char *s = [str cStringUsingEncoding:[NSString defaultCStringEncoding]];
         const char *s1 = [str cStringUsingEncoding:NSUTF8StringEncoding];
-        char *s2 = NULL;
+//        char *s2 = NULL;
 //        if (strcmp(s, s2) == 0) {
         if(s == NULL) {
             fwrite(s1, [str length] + 1, 1, pFile);
