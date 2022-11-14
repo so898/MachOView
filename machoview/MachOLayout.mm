@@ -2504,6 +2504,7 @@ struct CompareSectionByName
   NSBlockOperation * linkEditOperation = [NSBlockOperation blockOperationWithBlock:^
   {
     if ([backgroundThread isCancelled]) return;
+      [dataController updateStatus:MVStatusTaskPendding :@"LinkEdit Parsing ..."];
     @autoreleasepool {
       if ([self is64bit] == NO) [self processLinkEdit]; else [self processLinkEdit64];
     }
@@ -2514,6 +2515,7 @@ struct CompareSectionByName
   NSBlockOperation * sectionRelocsOperation = [NSBlockOperation blockOperationWithBlock:^
   {
     if ([backgroundThread isCancelled]) return;
+      [dataController updateStatus:MVStatusTaskPendding :@"Section relocations Parsing ..."];
     @autoreleasepool {
       if ([self is64bit] == NO) [self processSectionRelocs]; else [self processSectionRelocs64];
     }
@@ -2523,6 +2525,7 @@ struct CompareSectionByName
   NSBlockOperation * dyldInfoOperation = [NSBlockOperation blockOperationWithBlock:^
   {
     if ([backgroundThread isCancelled]) return;
+       [dataController updateStatus:MVStatusTaskPendding :@"Dyld info  Parsing ..."];
     @autoreleasepool {
       [self processDyldInfo];
     }
@@ -2532,6 +2535,7 @@ struct CompareSectionByName
   NSBlockOperation * sectionOperation = [NSBlockOperation blockOperationWithBlock:^
   {
     if ([backgroundThread isCancelled]) return;
+      [dataController updateStatus:MVStatusTaskPendding :@"Section contents Parsing ..."];
     @autoreleasepool {
       if ([self is64bit] == NO) [self processSections]; else [self processSections64];
     }
@@ -2550,6 +2554,7 @@ struct CompareSectionByName
   NSBlockOperation * LSDAsOperation = [NSBlockOperation blockOperationWithBlock:^
   {
     if ([backgroundThread isCancelled]) return;
+      [dataController updateStatus:MVStatusTaskPendding :@" Lang Spec Data Areas  Parsing ..."];
     @autoreleasepool {
       if ([self is64bit] == NO) [self processLSDA]; else [self processLSDA64];
     }
@@ -2559,6 +2564,7 @@ struct CompareSectionByName
   NSBlockOperation * objcSectionOperation = [NSBlockOperation blockOperationWithBlock:^
   {
     if ([backgroundThread isCancelled]) return;
+      [dataController updateStatus:MVStatusTaskPendding :@" ObjC Section contents  Parsing ..."];
     @autoreleasepool {
       if ([self is64bit] == NO) [self processObjcSections]; else [self processObjcSections64];
     }
@@ -2568,6 +2574,7 @@ struct CompareSectionByName
   NSBlockOperation * codeSectionsOperation = [NSBlockOperation blockOperationWithBlock:^
   {
     if ([backgroundThread isCancelled]) return;
+      [dataController updateStatus:MVStatusTaskPendding :@" Code sections Parsing ..."];
     @autoreleasepool {
       if ([self is64bit] == NO) [self processCodeSections]; else [self processCodeSections64];
     }
