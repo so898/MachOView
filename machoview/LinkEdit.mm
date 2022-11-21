@@ -707,10 +707,6 @@ using namespace std;
     NSColor * color = nil;
     
     /* print the symbol nr */
-    [node.details appendRow:[NSString stringWithFormat:@"#%d", nsym]
-                           :@""
-                           :@""
-                           :@""];
       
     [dataController read_uint32:range lastReadHex:&lastReadHex];
       
@@ -887,10 +883,6 @@ using namespace std;
     NSColor * color = nil;
     
     /* print the symbol nr */
-    [node.details appendRow:[NSString stringWithFormat:@"#%d", nsym]
-                           :@""
-                           :@""
-                           :@""];
 
     [dataController read_uint32:range lastReadHex:&lastReadHex];
 
@@ -1134,9 +1126,7 @@ using namespace std;
       NSUInteger bookmark = node.details.rowCount;
       NSString * symbolName = nil;
       NSColor * color = nil;
-        
-        [node.details appendRow:[NSString stringWithFormat:@"#%d",nindsym] :@"":@"":@""];
-        
+    
       // read indirect symbol index
       uint32_t indirectIndex = [dataController read_uint32:range lastReadHex:&lastReadHex];
         
@@ -1272,9 +1262,7 @@ using namespace std;
       NSUInteger bookmark = node.details.rowCount;
       NSString * symbolName = nil;
       NSColor * color = nil;
-        
-     [node.details appendRow:[NSString stringWithFormat:@"#%d",nindsym] :@"":@"":@""];
-    
+            
       // read indirect symbol index
       uint32_t indirectIndex = [dataController read_uint32:range lastReadHex:&lastReadHex];
       
@@ -1922,11 +1910,6 @@ using namespace std;
     while (NSMaxRange(range) < location + length)
     {
         NSString * symbolName = [dataController read_string:range lastReadHex:&lastReadHex];
-        
-        [node.details appendRow:[NSString stringWithFormat:@"#%d", index]
-                               :@""
-                               :@""
-                               :@""];
         
         index += range.length;
         
