@@ -208,7 +208,11 @@ int64_t nrow_loaded; // number of loaded rows
   }
   
   // check for magic values at front
-  NSFileHandle * fileHandle = [NSFileHandle fileHandleForReadingAtPath:filename];
+    NSError *error;
+    NSFileHandle * fileHandle = [NSFileHandle fileHandleForReadingFromURL:url error:&error];
+    if (error) {
+        NSLog(@"%@", error);
+    }
   NSData * magicData = [fileHandle readDataOfLength:8];
   [fileHandle closeFile];
   
