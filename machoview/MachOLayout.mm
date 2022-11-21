@@ -1657,6 +1657,40 @@ struct CompareSectionByName
 }
 
 //-----------------------------------------------------------------------------
+-(void)processUnwindInfo
+{
+    NSString * lastNodeCaption;
+    
+    for (Section64Vector::iterator sectIter = find_if(++sections_64.begin(), sections_64.end(), CompareSectionByName<struct section_64>("__unwind_info"));
+         sectIter != sections_64.end();
+         sectIter = find_if(++sectIter, sections_64.end(), CompareSectionByName<struct section_64>("__unwind_info")))
+    {
+        struct section_64 const * section_64 = *sectIter;
+        
+        MVNode * sectionNode = [self findNodeByUserInfo:[self userInfoForSection64:section_64]];
+        NSParameterAssert(sectionNode != nil);
+        if (sectionNode == nil)
+        {
+            return;
+        }
+        
+        @try
+        {
+            uint32_t location = section_64->offset + imageOffset;
+//            do
+//            {
+                MATCH_STRUCT(unwind_info_section_header, location);
+                [self createUnwindInfoHeaderNode:sectionNode caption:@"Unwind Info" location:location header:unwind_info_section_header];
+//            } while (location - section_64->offset - imageOffset < section_64->size);
+        }
+        @catch(NSException * exception)
+        {
+            [self printException:exception caption:lastNodeCaption];
+        }
+    }
+}
+
+//-----------------------------------------------------------------------------
 -(void)processObjcSections
 {
   PointerVector objcClassPointers;
@@ -2584,6 +2618,18 @@ struct CompareSectionByName
     }
     NSLog(@"%@: Lang Spec Data Areas finished parsing. (%lu LSDAs found)", self, lsdaInfo.size());
   }];
+    
+    NSBlockOperation * unwindInfoOperation = [NSBlockOperation blockOperationWithBlock:^
+                                         {
+        if ([backgroundThread isCancelled]) return;
+        [dataController updateStatus:MVStatusTaskPendding :@" Unwind info  Parsing ..."];
+        @autoreleasepool {
+            [self processUnwindInfo];
+        }
+        NSLog(@"Unwind info parsing");
+    }];
+    
+    
   
   NSBlockOperation * objcSectionOperation = [NSBlockOperation blockOperationWithBlock:^
   {
@@ -2629,6 +2675,7 @@ struct CompareSectionByName
                                                 dyldInfoOperation,
                                                 EHFramesOperation,
                                                 LSDAsOperation,
+                                                unwindInfoOperation,
                                                 objcSectionOperation,
                                                 codeSectionsOperation,nil] 
     waitUntilFinished:YES];
