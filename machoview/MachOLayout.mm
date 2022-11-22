@@ -1429,7 +1429,15 @@ struct CompareSectionByName
                               length:section_64->size
                               stride:section_64->reserved2]; break;
           
-        default:;
+        default:
+          {
+              if ([sectionNode.userInfo[@"sectname"] isEqualToString:@"__objc_protorefs"]) {
+                  [self createPointers64Node:sectionNode
+                                     caption:(lastNodeCaption = @"Protocols")
+                                    location:section_64->offset + imageOffset
+                                      length:section_64->size];
+              }
+          };
       }
     }
     @catch(NSException * exception)
