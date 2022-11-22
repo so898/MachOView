@@ -1818,6 +1818,16 @@ struct CompareSectionByName
                               length:section->size];
       }
     } // if (hasObjcModules == false)
+      
+      section = [self findSectionByName:"__objc_ivar" andSegment:"__DATA"];
+      if ((sectionNode = [self findNodeByUserInfo:[self userInfoForSection:section]]))
+      {
+          [self createObjC2PointerListNode:sectionNode
+                                   caption:(lastNodeCaption = @"ObjC2 ivar")
+                                  location:section->offset + imageOffset
+                                    length:section->size
+                                  pointers:objcProtocolPointers];
+      }
     
     section = [self findSectionByName:"__image_info" andSegment:"__OBJC"];
     if (section == NULL)
@@ -1952,6 +1962,15 @@ struct CompareSectionByName
                             location:section_64->offset + imageOffset 
                               length:section_64->size];
     }
+      
+      section_64 = [self findSection64ByName:"__objc_ivar" andSegment:"__DATA"];
+      if ((sectionNode = [self findNodeByUserInfo:[self userInfoForSection64:section_64]]))
+      {
+          [self createPointers64Node:sectionNode
+                             caption:(lastNodeCaption = @"ObjC2 ivar")
+                            location:section_64->offset + imageOffset
+                              length:section_64->size];
+      }
     
     section_64 = [self findSection64ByName:"__image_info" andSegment:"__OBJC"];
     if (section_64 == NULL)
