@@ -1429,15 +1429,7 @@ struct CompareSectionByName
                               length:section_64->size
                               stride:section_64->reserved2]; break;
           
-        default:
-          {
-              if ([sectionNode.userInfo[@"sectname"] isEqualToString:@"__objc_protorefs"]) {
-                  [self createPointers64Node:sectionNode
-                                     caption:(lastNodeCaption = @"Protocols")
-                                    location:section_64->offset + imageOffset
-                                      length:section_64->size];
-              }
-          };
+        default:;
       }
     }
     @catch(NSException * exception)
@@ -1793,6 +1785,15 @@ struct CompareSectionByName
                                   length:section->size
                                 pointers:objcSuperReferences];
       }
+        
+        section = [self findSectionByName:"__objc_protorefs" andSegment:"__DATA"];
+        if ((sectionNode = [self findNodeByUserInfo:[self userInfoForSection:section]]))
+        {
+            [self createPointers64Node:sectionNode
+                               caption:(lastNodeCaption = @"ObjC2 Protocols")
+                              location:section->offset + imageOffset
+                                length:section->size];
+        }
       
       section = [self findSectionByName:"__protocol_list" andSegment:"__OBJC2"];
       if (section == NULL)
@@ -1931,6 +1932,15 @@ struct CompareSectionByName
                                   length:section_64->size
                                 pointers:objcProtocolPointers];
     }
+      
+      section_64 = [self findSection64ByName:"__objc_protorefs" andSegment:"__DATA"];
+      if ((sectionNode = [self findNodeByUserInfo:[self userInfoForSection64:section_64]]))
+      {
+          [self createPointers64Node:sectionNode
+                             caption:(lastNodeCaption = @"ObjC2 Protocols")
+                            location:section_64->offset + imageOffset
+                              length:section_64->size];
+      }
     
     section_64 = [self findSection64ByName:"__message_refs" andSegment:"__OBJC2"];
     if (section_64 == NULL)
