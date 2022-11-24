@@ -17,6 +17,7 @@
 #import "SectionContents.h"
 #import "ObjC.h"
 #import "CRTFootPrints.h"
+#import "objc_headers.h"
 
 using namespace std;
 
@@ -1873,9 +1874,10 @@ struct CompareSectionByName
 {
   Pointer64Vector objcClassPointers;
   Pointer64Vector objcClassReferences;
-  Pointer64Vector objcSuperReferences;
   Pointer64Vector objcCategoryPointers;
   Pointer64Vector objcProtocolPointers;
+    Pointer64Vector objcMethodPointers;
+    Pointer64Vector objcClassDataPointers;
   
   NSString * lastNodeCaption;
   MVNode * sectionNode;
@@ -1916,7 +1918,7 @@ struct CompareSectionByName
                                  caption:(lastNodeCaption = @"ObjC2 References") 
                                 location:section_64->offset + imageOffset 
                                   length:section_64->size
-                                pointers:objcSuperReferences];
+                                pointers:objcClassPointers];
     }
 
     section_64 = [self findSection64ByName:"__category_list" andSegment:"__OBJC2"];
@@ -1991,6 +1993,61 @@ struct CompareSectionByName
                              location:section_64->offset + imageOffset 
                                length:section_64->size];
     }
+      
+      
+      // Objc Category
+      for (uint64_t elem : objcCategoryPointers)
+      {
+          MATCH_STRUCT64(objc_category_t, elem);
+          NSRange xRange = NSMakeRange((objc_category_t->name & 0xffffffff), 0);
+          NSString *name = [dataController read_string:xRange];
+          if (objc_category_t->cls != 0 && (objc_category_t->cls & 0xffffffff) < dataController.realData.length) {
+              // 由于 machoview 工具会修改外部引用，导致这里本来只用判 0 的情况需要增加判断外部 Class 地址，暂时通过此方法做保护
+              objcClassPointers.push_back(objc_category_t->cls);
+          }
+          if (objc_category_t->instanceMethods != 0) {
+              objcMethodPointers.push_back(objc_category_t->instanceMethods);
+          }
+          if (objc_category_t->classMethods != 0) {
+              objcMethodPointers.push_back(objc_category_t->classMethods);
+          }
+          NSLog(@"Category: %@ ", name);
+      }
+      
+      // Objc Method
+      for (uint64_t elem : objcMethodPointers)
+      {
+          MATCH_STRUCT64(objc_method_list_t, elem);
+          for (NSUInteger idx = 0 ; idx < objc_method_list_t->count ; idx ++) {
+              MATCH_STRUCT64(objc_method_t, (elem + sizeof(struct objc_method_list_t) + idx * sizeof(struct objc_method_t)));
+              NSRange xRange = NSMakeRange((objc_method_t->name & 0xffffffff), 0);
+              NSString *name = [dataController read_string:xRange];
+              
+              xRange = NSMakeRange((objc_method_t->types & 0xffffffff), 0);
+              NSString *type = [dataController read_string:xRange];
+              
+              NSLog(@"Method: %@ | %@ | %llu", name, type, objc_method_t->imp);
+          }
+      }
+      
+      // Objc Class
+      for (uint64_t elem : objcClassPointers) {
+          MATCH_STRUCT64(objc_class_t, elem);
+          if (objc_class_t->metaClass != 0){
+              objcClassPointers.push_back(objc_class_t->metaClass);
+          }
+          if (objc_class_t->data() != 0) {
+              objcClassDataPointers.push_back(objc_class_t->data());
+          }
+          BOOL isSwiftClass = false;
+          if (objc_class_t->isAnySwift()) {
+              MATCH_STRUCT64(swift_class_t, elem);
+              NSLog(@"Swift Class: %u", swift_class_t->classAddressOffset);
+              isSwiftClass = true;
+          }
+          NSString *className = [self findSymbolAtRVA64:elem];
+          NSLog(@"Class: %@[%d]", className, isSwiftClass);
+      }
   }
   @catch(NSException * exception)
   {
