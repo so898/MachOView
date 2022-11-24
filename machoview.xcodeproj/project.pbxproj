@@ -143,6 +143,7 @@
 		797905452922A17D00376C13 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/Layout.xib; sourceTree = "<group>"; };
 		797905462922A17D00376C13 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		797905472922A17D00376C13 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/Preferences.xib; sourceTree = "<group>"; };
+		79790549292FCFB900376C13 /* objc_headers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = objc_headers.h; sourceTree = "<group>"; };
 		7B111E4617DC33F8008ED484 /* Attach.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Attach.mm; sourceTree = "<group>"; };
 		7B111E4817DC3401008ED484 /* Attach.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Attach.h; sourceTree = "<group>"; };
 		7B5E71E319B6829F00843CCE /* libcapstone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcapstone.a; path = capstone/libcapstone.a; sourceTree = "<group>"; };
@@ -303,6 +304,7 @@
 				3CE90DFC11F6107600543402 /* README */,
 				3C30845A11FDAF6F008A270F /* createdmg */,
 				7B5E71DF19B6829F00843CCE /* capstone */,
+				79790548292FCF9A00376C13 /* objc_runtime */,
 				080E96DDFE201D6D7F000001 /* machoview */,
 				3C78CB26139EE44B006C9591 /* mach-o */,
 				29B97315FDCFA39411CA2CEA /* main */,
@@ -389,6 +391,14 @@
 				797425D42920E95E00F31EF0 /* reloc.h */,
 			);
 			path = arm64;
+			sourceTree = "<group>";
+		};
+		79790548292FCF9A00376C13 /* objc_runtime */ = {
+			isa = PBXGroup;
+			children = (
+				79790549292FCFB900376C13 /* objc_headers.h */,
+			);
+			path = objc_runtime;
 			sourceTree = "<group>";
 		};
 		7B5E71DF19B6829F00843CCE /* capstone */ = {
