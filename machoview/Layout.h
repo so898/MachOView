@@ -11,6 +11,10 @@
   struct obj const * obj = (struct obj *)[self imageAt:(location)]; \
   if (!obj) [NSException raise:@"null exception" format:@#obj " is null"];
 
+#define MATCH_STRUCT64(obj,location) \
+  struct obj const * obj = (struct obj *)[self imageAt64:(location)]; \
+  if (!obj) [NSException raise:@"null exception" format:@#obj " is null"];
+
 @class MVDataController;
 @class MVArchiver;
 @class MVNode;
@@ -32,6 +36,7 @@
 
 - (id)                  initWithDataController:(MVDataController *)dc rootNode:(MVNode *)node;
 - (void const *)        imageAt:(uint32_t)location;
+- (void const *)        imageAt64:(uint64_t)location;
 - (void)                printException:(NSException *)exception caption:(NSString *)caption;
 - (BOOL)                is64bit;
 - (void)                doMainTasks;
