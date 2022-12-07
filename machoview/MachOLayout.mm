@@ -1875,7 +1875,9 @@ struct CompareSectionByName
   Pointer64Vector objcClassPointers;
   Pointer64Vector objcClassReferences;
   Pointer64Vector objcCategoryPointers;
+    Pointer64Vector objcProtocolListPointers;
   Pointer64Vector objcProtocolPointers;
+    Pointer64Vector objcPropertyPointers;
     Pointer64Vector objcMethodPointers;
     Pointer64Vector objcClassDataPointers;
   
@@ -2011,7 +2013,35 @@ struct CompareSectionByName
           if (objc_category_t->classMethods != 0) {
               objcMethodPointers.push_back(objc_category_t->classMethods);
           }
+          if (objc_category_t->protocols != 0) {
+              objcProtocolListPointers.push_back(objc_category_t->protocols);
+          }
+          if (objc_category_t->instanceProperties != 0) {
+              objcPropertyPointers.push_back(objc_category_t->instanceProperties);
+          }
+          if (objc_category_t->_classProperties != 0) {
+              objcPropertyPointers.push_back(objc_category_t->_classProperties);
+          }
           NSLog(@"Category: %@ ", name);
+      }
+      
+      // Objc Protocol List
+      for (uint64_t elem : objcProtocolListPointers)
+      {
+          MATCH_STRUCT64(objc_protocol_list_t, elem);
+          for (NSUInteger idx = 0 ; idx < objc_protocol_list_t->count ; idx ++) {
+              uint64_t x = (objc_protocol_list_t->list + idx * sizeof(struct objc_protocol_t));
+              objcProtocolPointers.push_back(x);
+          }
+      }
+      
+      // Objc Protocol
+      for (uint64_t elem : objcProtocolPointers)
+      {
+          MATCH_STRUCT64(objc_protocol_t, elem);
+          NSRange xRange = NSMakeRange((objc_protocol_t->mangledName & 0xffffffff), 0);
+          NSString *name = [dataController read_string:xRange];
+          NSLog(@"Protocol: %@ ", name);
       }
       
       // Objc Method

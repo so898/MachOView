@@ -12,8 +12,6 @@
 #include <atomic>
 #include <type_traits>
 
-typedef uintptr_t protocol_ref_t;  // protocol_t *, but unremapped
-
 struct objc_class_rw_t {
     uint32_t flags;
     uint16_t witness;
@@ -90,10 +88,26 @@ struct objc_method_list_t {
     }
 };
 
+struct objc_protocol_t {
+    uint64_t isa;
+    uint64_t mangledName;
+    uint64_t protocols;
+    uint64_t instanceMethods;
+    uint64_t classMethods;
+    uint64_t optionalInstanceMethods;
+    uint64_t optionalClassMethods;
+    uint64_t instanceProperties;
+    uint32_t size;   // sizeof(protocol_t)
+    uint32_t flags;
+    uint32_t _extendedMethodTypes;
+    uint64_t _demangledName;
+    uint64_t _classProperties;
+};
+
 struct objc_protocol_list_t {
     // count is pointer-sized by accident.
-    uintptr_t count;
-    protocol_ref_t list[0]; // variable-size
+    uint64_t count;
+    uint64_t list; // variable-size objc_protocol_t
 };
 
 struct objc_category_t {
